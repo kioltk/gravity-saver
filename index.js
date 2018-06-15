@@ -47,7 +47,7 @@ function str(buffer, s) {
   return new Buffer(buffer + s);
 }
 
-async function write(fileName, levels) {
+async function buffer(levels) {
   var difficultyHeaders = [];
   var trackHeaders = [[], [], []];
   var tracksBuffers = [[], [], []];
@@ -127,12 +127,16 @@ async function write(fileName, levels) {
   const finalTracks = tracksBuffers.reduce((p, c) => {
     return [...p, ...c];
   }, []);
-  const result = Buffer.concat([...finalHeaders, ...finalTracks]);
+  return Buffer.concat([...finalHeaders, ...finalTracks]);
+}
 
-  var error = await require("fs").writeFile(fileName, result);
+async function write(fileName, levels) {
+  var error = await require("fs").writeFile(fileName, await buffer(levels));
   if (error) {
     throw error;
   }
+  return null;
 }
 
 module.exports = write;
+module.exports.buffer = buffer;
